@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+            android:id="@+id/menuDocumentFile"
+            android:title="DocumentFile"
+            app:showAsAction="never" />
+    <item
+            android:id="@+id/menuFile"
+            android:title="File"
+            app:showAsAction="never" />
+    <item
+            android:id="@+id/menuEncryptedFile"
+            android:title="EncryptedFile"
+            app:showAsAction="never" />
+    <item
+            android:id="@+id/menuSharedPreference"
+            android:title="SharedPreference"
+            app:showAsAction="never" />
+    <item
+            android:id="@+id/menuEncryptedSharedPreference"
+            android:title="EncryptedSharedPreference"
+            app:showAsAction="never" />
+</menu>
