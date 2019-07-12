@@ -1,13 +1,13 @@
 package woo.filehandlingexample
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsProvider
-import android.support.v4.content.MimeTypeFilter
-import android.support.v4.provider.DocumentFile
+import androidx.core.content.MimeTypeFilter
+import androidx.documentfile.provider.DocumentFile
 import android.util.Log
 import java.io.ByteArrayOutputStream
 import java.io.File
