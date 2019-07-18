@@ -62,8 +62,6 @@ class MainActivity : AppCompatActivity() {
                 requestPermissions(deniedPermissions.toTypedArray(), PERMISSION_ALL)
             }
         }
-        //
-
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
