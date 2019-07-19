@@ -31,7 +31,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
         menuFile.value = MenuFile.values()[
                 PreferenceManager
                     .getDefaultSharedPreferences(application)
-                    .getInt(PREF_KEY_MENU_FILE, MenuFile.DOCUMENT_FILE.ordinal)]
+                    .getInt(PREF_KEY_MENU_FILE, MenuFile.ENCRYPTED_FILE.ordinal)]
         menuFile.observeForever {
             it?.apply {
                 PreferenceManager

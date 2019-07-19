@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsProvider
+import android.security.keystore.KeyGenParameterSpec
 import androidx.core.content.MimeTypeFilter
 import androidx.documentfile.provider.DocumentFile
 import android.util.Log
@@ -136,6 +137,7 @@ class MemoRepository {
                 contents = String(byteStream.toByteArray())
                 fileInputStream.close()
             }
+            memoContents.postValue(Memo.success(contents))
         }
     }
 
@@ -167,8 +169,19 @@ class MemoRepository {
 
     private fun doActionWithEncryptedFile(context: Context, action: EncryptedFile.() -> Unit) {
 
+        val keySet = hashSetOf<String>()
+        keySet.add("stringBasedEncryptionKeyOne")
+        keySet.add("stringBasedEncryptionKeyTwo")
+        val keySetReference = "secretFileKeys"
+
+        val sharedPref = context.getSharedPreferences("woo.filehandlingexample.preferenceFileKey", Context.MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        editor.putStringSet(keySetReference, keySet)
+        editor.apply()
+
         val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
 
+        /*
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
             ?.let { dir ->
                 val file = File(dir, "$FILE_NAME_ENCRYPTED_MEMO.$FILE_EXTENSION_TXT")
@@ -179,7 +192,28 @@ class MemoRepository {
                     context,
                     masterKeyAlias,
                     EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-                ).build()
+                ).setKeysetAlias(keySetReference).build()
+            }
+            ?.run(action)
+            */
+        context.filesDir
+            ?.let { dir ->
+                val file = File(dir, "$FILE_NAME_ENCRYPTED_MEMO.$FILE_EXTENSION_TXT")
+                //if (!file.exists()) {
+                //    file.createNewFile()
+                //}
+
+                for (f in dir.listFiles()) {
+                    Log.i(TAG, "fileName : " + f.name)
+                }
+
+                EncryptedFile.Builder(file,
+                    context,
+                    masterKeyAlias,
+                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+                )
+                    .setKeysetAlias(keySetReference)
+                    .build()
             }
             ?.run(action)
     }
