@@ -152,24 +152,7 @@ class MemoRepository {
     fun readFromEncryptedFile(context: Context) {
         memoContents.value = Memo.processing()
         appExecutors.diskIO.execute {
-            /*
             var contents = ""
-            doActionWithEncryptedFile(context) {
-                val fileInputStream = openFileInput()
-                val byteStream = ByteArrayOutputStream()
-                var nextByte = fileInputStream.read()
-                while (nextByte != -1) {
-                    byteStream.write(nextByte)
-                    nextByte = fileInputStream.read()
-                }
-                contents = String(byteStream.toByteArray())
-                fileInputStream.close()
-            }
-            memoContents.postValue(Memo.success(contents))
-            */
-
-            var contents = ""
-
             context.filesDir
                 ?.let { dir ->
                     val keySet = hashSetOf<String>()
@@ -181,10 +164,6 @@ class MemoRepository {
                         .apply()
                     val file = File(dir, "$FILE_ENCRYPTED_MEMO.$FILE_EXTENSION_TXT")
 
-                    if (file.exists()) {
-                        file.delete()
-                    }
-
                     EncryptedFile.Builder(file,
                         context,
                         MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
@@ -192,15 +171,17 @@ class MemoRepository {
                     ).setKeysetAlias(REFERENCE_SECRET_FILE_KEYS).build()
                 }
                 ?.apply {
-                    val fileOutputStream = openFileOutput()
-                    fileOutputStream.apply {
-                        write(contents.toByteArray(Charset.forName("UTF-8")))
-                        flush()
-                        close()
+                    val fileInputStream = openFileInput()
+                    val byteStream = ByteArrayOutputStream()
+                    var nextByte = fileInputStream.read()
+                    while (nextByte != -1) {
+                        byteStream.write(nextByte)
+                        nextByte = fileInputStream.read()
                     }
+                    contents = String(byteStream.toByteArray())
+                    fileInputStream.close()
                 }
-
-
+            memoContents.postValue(Memo.success(contents))
         }
     }
 
