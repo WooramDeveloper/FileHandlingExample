@@ -73,39 +73,21 @@ class MemoRepository {
     }
 
     fun writeToEncryptedFile(context: Context, contents: String) {
-
         memoContents.value = Memo.processing()
         appExecutors.diskIO.execute {
-            context.filesDir
-                ?.let { dir ->
-                    val keySet = hashSetOf<String>()
-                    keySet.add(VALUE_ENCRYPTION_KEY_ONE)
-                    keySet.add(VALUE_ENCRYPTION_KEY_TWO)
-                    context.getSharedPreferences(PREFERENCE_SECRET_FILE_KEYS, Context.MODE_PRIVATE)
-                        .edit()
-                        .putStringSet(REFERENCE_SECRET_FILE_KEYS, keySet)
-                        .apply()
-                    val file = File(dir, "$FILE_ENCRYPTED_MEMO.$FILE_EXTENSION_TXT")
-
-                    if (file.exists()) {
-                        file.delete()
-                    }
-
-                    EncryptedFile.Builder(file,
-                        context,
-                        MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
-                        EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-                    ).setKeysetAlias(REFERENCE_SECRET_FILE_KEYS).build()
+            doActionWithEncryptedFile(context) { file ->
+                if (file.exists()) {
+                    file.delete()
                 }
-                ?.apply {
-                    val fileOutputStream = openFileOutput()
-                    fileOutputStream.apply {
-                        write(contents.toByteArray(Charset.forName("UTF-8")))
-                        flush()
-                        close()
-                    }
+                file
+            }?.apply {
+                val fileOutputStream = openFileOutput()
+                fileOutputStream.apply {
+                    write(contents.toByteArray(Charset.forName("UTF-8")))
+                    flush()
+                    close()
                 }
-
+            }
             memoContents.postValue(Memo.success(contents))
         }
     }
@@ -153,34 +135,23 @@ class MemoRepository {
         memoContents.value = Memo.processing()
         appExecutors.diskIO.execute {
             var contents = ""
-            context.filesDir
-                ?.let { dir ->
-                    val keySet = hashSetOf<String>()
-                    keySet.add(VALUE_ENCRYPTION_KEY_ONE)
-                    keySet.add(VALUE_ENCRYPTION_KEY_TWO)
-                    context.getSharedPreferences(PREFERENCE_SECRET_FILE_KEYS, Context.MODE_PRIVATE)
-                        .edit()
-                        .putStringSet(REFERENCE_SECRET_FILE_KEYS, keySet)
-                        .apply()
-                    val file = File(dir, "$FILE_ENCRYPTED_MEMO.$FILE_EXTENSION_TXT")
-
-                    EncryptedFile.Builder(file,
-                        context,
-                        MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
-                        EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-                    ).setKeysetAlias(REFERENCE_SECRET_FILE_KEYS).build()
+            doActionWithEncryptedFile(context) { file ->
+                if (file.exists()) {
+                    file
+                } else {
+                    null
                 }
-                ?.apply {
-                    val fileInputStream = openFileInput()
-                    val byteStream = ByteArrayOutputStream()
-                    var nextByte = fileInputStream.read()
-                    while (nextByte != -1) {
-                        byteStream.write(nextByte)
-                        nextByte = fileInputStream.read()
-                    }
-                    contents = String(byteStream.toByteArray())
-                    fileInputStream.close()
+            }?.apply {
+                val fileInputStream = openFileInput()
+                val byteStream = ByteArrayOutputStream()
+                var nextByte = fileInputStream.read()
+                while (nextByte != -1) {
+                    byteStream.write(nextByte)
+                    nextByte = fileInputStream.read()
                 }
+                contents = String(byteStream.toByteArray())
+                fileInputStream.close()
+            }
             memoContents.postValue(Memo.success(contents))
         }
     }
@@ -210,38 +181,10 @@ class MemoRepository {
             }
             ?.run(action)
     }
-
-    /*
-    private fun doActionWithEncryptedFile(context: Context, action: EncryptedFile.() -> Unit) {
-
-        val keySet = hashSetOf<String>()
-        keySet.add("stringBasedEncryptionKeyOne")
-        keySet.add("stringBasedEncryptionKeyTwo")
-        val keySetReference = "secretFileKeys"
-
-        val sharedPref = context.getSharedPreferences("woo.filehandlingexample.preferenceFileKey", Context.MODE_PRIVATE)
-        val editor = sharedPref.edit()
-        editor.putStringSet(keySetReference, keySet)
-        editor.apply()
-
-        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-        context.filesDir
-            ?.let { dir ->
-                val file = File(dir, "$FILE_NAME_ENCRYPTED_MEMO.$FILE_EXTENSION_TXT")
-                EncryptedFile.Builder(file,
-                    context,
-                    masterKeyAlias,
-                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-                )
-                    .setKeysetAlias(keySetReference)
-                    .build()
-            }
-            ?.run(action)
-    }
-    */
-
-    private fun doActionWithEncryptedFile(context: Context, action: EncryptedFile.() -> Unit) {
-        context.filesDir
+    
+    private fun doActionWithEncryptedFile(context: Context,
+                                          action: (File) -> File?): EncryptedFile? {
+        return context.filesDir
             ?.let { dir ->
                 val keySet = hashSetOf<String>()
                 keySet.add(VALUE_ENCRYPTION_KEY_ONE)
@@ -250,32 +193,15 @@ class MemoRepository {
                     .edit()
                     .putStringSet(REFERENCE_SECRET_FILE_KEYS, keySet)
                     .apply()
-
-
-
-
-
-
-                /*
-                val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-                val file = File(dir, "$FILE_ENCRYPTED_MEMO.$FILE_EXTENSION_TXT")
-                EncryptedFile.Builder(file,
+                File(dir, "$FILE_ENCRYPTED_MEMO.$FILE_EXTENSION_TXT")
+            }
+            ?.run(action)
+            ?.run {
+                EncryptedFile.Builder(this,
                     context,
-                    masterKeyAlias,
+                    MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
                     EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-                )
-                    .setKeysetAlias(REFERENCE_SECRET_FILE_KEYS)
-                    .build()
-                */
-
-
-
-
-
-
-
+                ).setKeysetAlias(REFERENCE_SECRET_FILE_KEYS).build()
             }
     }
-
-
 }
