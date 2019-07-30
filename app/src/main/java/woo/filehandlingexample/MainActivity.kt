@@ -86,23 +86,23 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.menuDocumentFile -> {
-                memoViewModel.menuFile.value = MemoViewModel.MenuFile.DOCUMENT_FILE
+                memoViewModel.fileType.value = MemoViewModel.FileType.DOCUMENT_FILE
                 return true
             }
             R.id.menuFile -> {
-                memoViewModel.menuFile.value = MemoViewModel.MenuFile.FILE
+                memoViewModel.fileType.value = MemoViewModel.FileType.FILE
                 return true
             }
             R.id.menuEncryptedFile -> {
-                memoViewModel.menuFile.value = MemoViewModel.MenuFile.ENCRYPTED_FILE
+                memoViewModel.fileType.value = MemoViewModel.FileType.ENCRYPTED_FILE
                 return true
             }
             R.id.menuSharedPreference -> {
-                memoViewModel.menuFile.value = MemoViewModel.MenuFile.SHARED_PREFERENCE
+                memoViewModel.fileType.value = MemoViewModel.FileType.SHARED_PREFERENCE
                 return true
             }
             R.id.menuEncryptedSharedPreference -> {
-                memoViewModel.menuFile.value = MemoViewModel.MenuFile.ENCRYPTED_SHARED_PREFERENCE
+                memoViewModel.fileType.value = MemoViewModel.FileType.ENCRYPTED_SHARED_PREFERENCE
                 return true
             }
         }
@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity() {
                 saveButton.isEnabled = true
             }
         })
-        memoViewModel.menuFile.observe(this, Observer {
+        memoViewModel.fileType.observe(this, Observer {
             memoViewModel.readMemo(applicationContext)
         })
     }

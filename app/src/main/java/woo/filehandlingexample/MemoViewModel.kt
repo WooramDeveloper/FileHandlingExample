@@ -13,7 +13,7 @@ import android.preference.PreferenceManager
 private const val PREF_KEY_MENU_FILE = "prefKeyMenuFile"
 
 class MemoViewModel(application: Application) : AndroidViewModel(application) {
-    enum class MenuFile {
+    enum class FileType {
         DOCUMENT_FILE,
         FILE,
         ENCRYPTED_FILE,
@@ -24,15 +24,16 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     private val memoRepository = MemoRepository()
     var memoContents = memoRepository.memoContents
     var isFileAvailable = MutableLiveData<Boolean>()
-    var menuFile = MutableLiveData<MenuFile>()
+    var fileType = MutableLiveData<FileType>()
 
     init {
         isFileAvailable.value = false
-        menuFile.value = MenuFile.values()[
+        fileType.value = FileType.values()[
                 PreferenceManager
                     .getDefaultSharedPreferences(application)
-                    .getInt(PREF_KEY_MENU_FILE, MenuFile.ENCRYPTED_FILE.ordinal)]
-        menuFile.observeForever {
+                    .getInt(PREF_KEY_MENU_FILE, FileType.ENCRYPTED_FILE.ordinal)]
+
+        fileType.observeForever {
             it?.apply {
                 PreferenceManager
                     .getDefaultSharedPreferences(application)
@@ -44,39 +45,39 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun readMemo(context: Context) {
-        when (menuFile.value) {
-            MenuFile.DOCUMENT_FILE -> {
+        when (fileType.value) {
+            FileType.DOCUMENT_FILE -> {
                 memoRepository.readFromDocumentFile(context)
             }
-            MenuFile.FILE -> {
+            FileType.FILE -> {
                 memoRepository.readFromFile(context)
             }
-            MenuFile.ENCRYPTED_FILE -> {
+            FileType.ENCRYPTED_FILE -> {
                 memoRepository.readFromEncryptedFile(context)
             }
-            MenuFile.SHARED_PREFERENCE -> {
+            FileType.SHARED_PREFERENCE -> {
             }
-            MenuFile.ENCRYPTED_SHARED_PREFERENCE -> {
+            FileType.ENCRYPTED_SHARED_PREFERENCE -> {
 
             }
         }
     }
 
     fun writeMemo(context: Context, contents: String) {
-        when (menuFile.value) {
-            MenuFile.DOCUMENT_FILE -> {
+        when (fileType.value) {
+            FileType.DOCUMENT_FILE -> {
                 memoRepository.writeToDocumentFile(context, contents)
             }
-            MenuFile.FILE -> {
+            FileType.FILE -> {
                 memoRepository.writeToFile(context, contents)
             }
-            MenuFile.ENCRYPTED_FILE -> {
+            FileType.ENCRYPTED_FILE -> {
                 memoRepository.writeToEncryptedFile(context, contents)
             }
-            MenuFile.SHARED_PREFERENCE -> {
+            FileType.SHARED_PREFERENCE -> {
 
             }
-            MenuFile.ENCRYPTED_SHARED_PREFERENCE -> {
+            FileType.ENCRYPTED_SHARED_PREFERENCE -> {
 
             }
         }
