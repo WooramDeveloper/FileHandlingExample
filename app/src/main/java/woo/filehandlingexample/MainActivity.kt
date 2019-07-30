@@ -15,6 +15,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 
 private const val TAG = "MainActivity"
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var memoViewModel: MemoViewModel
     lateinit var editText: EditText
+    lateinit var fileTypeTitle: TextView
     lateinit var saveButton: Button
     lateinit var loadingBar: View
     private val permissions = listOf(
@@ -86,15 +88,15 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.menuDocumentFile -> {
-                memoViewModel.fileType.value = MemoViewModel.FileType.DOCUMENT_FILE
+                memoViewModel.fileType.value = MemoViewModel.FileType.DocumentFile
                 return true
             }
             R.id.menuFile -> {
-                memoViewModel.fileType.value = MemoViewModel.FileType.FILE
+                memoViewModel.fileType.value = MemoViewModel.FileType.File
                 return true
             }
             R.id.menuEncryptedFile -> {
-                memoViewModel.fileType.value = MemoViewModel.FileType.ENCRYPTED_FILE
+                memoViewModel.fileType.value = MemoViewModel.FileType.EncryptedFile
                 return true
             }
         }
@@ -103,6 +105,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initView() {
         editText = findViewById(R.id.editText)
+        fileTypeTitle = findViewById(R.id.fileTypeTitle)
         loadingBar = findViewById(R.id.loadingBar)
         saveButton = findViewById(R.id.saveButton)
         saveButton.setOnClickListener {
@@ -141,8 +144,9 @@ class MainActivity : AppCompatActivity() {
                 saveButton.isEnabled = true
             }
         })
-        memoViewModel.fileType.observe(this, Observer {
+        memoViewModel.fileType.observe(this, Observer { fileType ->
             memoViewModel.readMemo(applicationContext)
+            fileTypeTitle.setText(fileType.name)
         })
     }
 }

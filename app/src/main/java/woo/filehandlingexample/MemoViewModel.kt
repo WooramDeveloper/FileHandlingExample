@@ -14,9 +14,9 @@ private const val PREF_KEY_MENU_FILE = "prefKeyMenuFile"
 
 class MemoViewModel(application: Application) : AndroidViewModel(application) {
     enum class FileType {
-        DOCUMENT_FILE,
-        FILE,
-        ENCRYPTED_FILE,
+        DocumentFile,
+        File,
+        EncryptedFile
     }
 
     private val memoRepository = MemoRepository()
@@ -29,7 +29,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
         fileType.value = FileType.values()[
                 PreferenceManager
                     .getDefaultSharedPreferences(application)
-                    .getInt(PREF_KEY_MENU_FILE, FileType.ENCRYPTED_FILE.ordinal)]
+                    .getInt(PREF_KEY_MENU_FILE, FileType.EncryptedFile.ordinal)]
 
         fileType.observeForever {
             it?.apply {
@@ -44,13 +44,13 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
 
     fun readMemo(context: Context) {
         when (fileType.value) {
-            FileType.DOCUMENT_FILE -> {
+            FileType.DocumentFile -> {
                 memoRepository.readFromDocumentFile(context)
             }
-            FileType.FILE -> {
+            FileType.File -> {
                 memoRepository.readFromFile(context)
             }
-            FileType.ENCRYPTED_FILE -> {
+            FileType.EncryptedFile -> {
                 memoRepository.readFromEncryptedFile(context)
             }
         }
@@ -58,13 +58,13 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
 
     fun writeMemo(context: Context, contents: String) {
         when (fileType.value) {
-            FileType.DOCUMENT_FILE -> {
+            FileType.DocumentFile -> {
                 memoRepository.writeToDocumentFile(context, contents)
             }
-            FileType.FILE -> {
+            FileType.File -> {
                 memoRepository.writeToFile(context, contents)
             }
-            FileType.ENCRYPTED_FILE -> {
+            FileType.EncryptedFile -> {
                 memoRepository.writeToEncryptedFile(context, contents)
             }
         }
