@@ -17,8 +17,6 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
         DOCUMENT_FILE,
         FILE,
         ENCRYPTED_FILE,
-        SHARED_PREFERENCE,
-        ENCRYPTED_SHARED_PREFERENCE
     }
 
     private val memoRepository = MemoRepository()
@@ -55,11 +53,6 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
             FileType.ENCRYPTED_FILE -> {
                 memoRepository.readFromEncryptedFile(context)
             }
-            FileType.SHARED_PREFERENCE -> {
-            }
-            FileType.ENCRYPTED_SHARED_PREFERENCE -> {
-
-            }
         }
     }
 
@@ -73,12 +66,6 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
             }
             FileType.ENCRYPTED_FILE -> {
                 memoRepository.writeToEncryptedFile(context, contents)
-            }
-            FileType.SHARED_PREFERENCE -> {
-
-            }
-            FileType.ENCRYPTED_SHARED_PREFERENCE -> {
-
             }
         }
     }

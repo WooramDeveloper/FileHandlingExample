@@ -13,12 +13,4 @@
             android:id="@+id/menuEncryptedFile"
             android:title="EncryptedFile"
             app:showAsAction="never" />
-    <item
-            android:id="@+id/menuSharedPreference"
-            android:title="SharedPreference"
-            app:showAsAction="never" />
-    <item
-            android:id="@+id/menuEncryptedSharedPreference"
-            android:title="EncryptedSharedPreference"
-            app:showAsAction="never" />
 </menu>

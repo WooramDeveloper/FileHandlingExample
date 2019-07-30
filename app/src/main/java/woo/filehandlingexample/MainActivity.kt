@@ -97,14 +97,6 @@ class MainActivity : AppCompatActivity() {
                 memoViewModel.fileType.value = MemoViewModel.FileType.ENCRYPTED_FILE
                 return true
             }
-            R.id.menuSharedPreference -> {
-                memoViewModel.fileType.value = MemoViewModel.FileType.SHARED_PREFERENCE
-                return true
-            }
-            R.id.menuEncryptedSharedPreference -> {
-                memoViewModel.fileType.value = MemoViewModel.FileType.ENCRYPTED_SHARED_PREFERENCE
-                return true
-            }
         }
         return super.onOptionsItemSelected(item)
     }
